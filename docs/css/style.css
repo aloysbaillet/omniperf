@@ -66,6 +66,7 @@ header {
   padding: 4px 10px;
   border-radius: 20px;
   border: 1px solid var(--border);
+  cursor: help;
 }
 
 .gh-link { color: var(--text-secondary); transition: color 0.2s; display: flex; }
