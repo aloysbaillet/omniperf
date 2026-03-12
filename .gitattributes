@@ -1,1 +1,2 @@
 docs/data/*.json filter=lfs diff=lfs merge=lfs -text
+docs/data/previews/*.jpg filter=lfs diff=lfs merge=lfs -text

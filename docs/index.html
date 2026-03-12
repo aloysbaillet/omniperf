@@ -1,15 +1,16 @@
-<!--
-  SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA Corporation
-  SPDX-License-Identifier: Apache-2.0
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Isaac Lab Performance Dashboard</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Isaac Lab Presets Performance Dashboard</title>
+  <script>const _v = Date.now();</script>
+  <link rel="stylesheet" id="appCss">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script>document.getElementById('appCss').href = 'css/style.css?v=' + _v;</script>
 </head>
 <body>
   <header>
@@ -20,27 +21,21 @@
             <rect width="24" height="24" rx="4" fill="#76b900"/>
             <path d="M7 12L10.5 15.5L17 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <h1>Isaac Lab <span class="accent">Performance</span></h1>
+          <h1>Isaac Lab <span class="accent">Presets</span></h1>
         </div>
-        <p class="subtitle">Omniperf Benchmark Results</p>
+        <p class="subtitle">Preset Combination Benchmark Results</p>
       </div>
       <div class="header-right">
-        <span id="lastUpdated" class="meta-badge tooltip">
-          <span class="tooltip-text">The date when benchmark data was last generated — not when this page was deployed.</span>
-        </span>
-        <a href="https://github.com/isaac-sim/IsaacLab" target="_blank" class="gh-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-          </svg>
-        </a>
+        <span id="lastUpdated" class="meta-badge"></span>
       </div>
     </div>
   </header>
 
   <nav class="tab-nav">
     <div class="tab-nav-inner">
-      <button class="nav-tab active" data-tab="overview">Overview</button>
-      <button class="nav-tab" data-tab="detail">Detail</button>
+      <button class="nav-tab active" data-tab="comparison">Preset Comparison</button>
+      <button class="nav-tab" data-tab="history">Performance History</button>
+      <button class="nav-tab" data-tab="info">Info</button>
       <div class="tab-gpu-select">
         <label for="gpuSelectGlobal">GPU</label>
         <select id="gpuSelectGlobal"></select>
@@ -49,87 +44,188 @@
   </nav>
 
   <main>
-    <!-- ===== OVERVIEW TAB ===== -->
-    <div id="overviewPanel" class="tab-panel active">
-      <div class="search-bar">
-        <div class="search-input-wrap">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" id="overviewSearch" placeholder="Filter benchmarks... (e.g. shadow, cartpole)" autocomplete="off">
-          <button id="searchClear" class="search-clear" style="display:none">&times;</button>
-        </div>
-        <div id="searchSuggestions" class="search-suggestions"></div>
-      </div>
-      <div id="overviewGrid"></div>
-    </div>
-
-    <!-- ===== DETAIL TAB ===== -->
-    <div id="detailPanel" class="tab-panel">
+    <!-- ===== PRESET COMPARISON TAB ===== -->
+    <div id="comparisonPanel" class="tab-panel active">
       <div class="controls">
         <div class="control-group">
-          <label for="benchmarkSelect">Benchmark</label>
-          <select id="benchmarkSelect"></select>
+          <label for="runSelectComp">Run (Commit)</label>
+          <select id="runSelectComp"></select>
         </div>
         <div class="control-group">
-          <label for="runSelect">Run</label>
-          <select id="runSelect"></select>
+          <label for="taskSelectComp">Task</label>
+          <select id="taskSelectComp"></select>
         </div>
         <div class="control-group">
-          <label for="sectionSelect">Section</label>
-          <select id="sectionSelect">
-            <option value="runtime">Runtime</option>
-            <option value="startup">Startup</option>
-          </select>
+          <label for="workflowSelectComp">Workflow</label>
+          <select id="workflowSelectComp"></select>
         </div>
-        <div class="control-group">
-          <label for="metricSelect">Metric</label>
-          <select id="metricSelect"></select>
+        <div class="control-group datatype-filter-wrap">
+          <label>Physics</label>
+          <div class="datatype-dropdown">
+            <button type="button" class="datatype-dropdown-btn" id="physicsFilterBtn">Physics (all) &#9660;</button>
+            <div class="datatype-dropdown-panel" id="physicsFilterPanel" aria-hidden="true">
+              <div class="datatype-actions">
+                <button type="button" class="datatype-action-btn" id="physicsSelectAll">Select all</button>
+                <button type="button" class="datatype-action-btn" id="physicsDeselectAll">Deselect all</button>
+              </div>
+              <div class="datatype-checkboxes" id="physicsCheckboxes"></div>
+            </div>
+          </div>
+        </div>
+        <div class="control-group datatype-filter-wrap">
+          <label>Renderer</label>
+          <div class="datatype-dropdown">
+            <button type="button" class="datatype-dropdown-btn" id="rendererFilterBtn">Renderer (all) &#9660;</button>
+            <div class="datatype-dropdown-panel" id="rendererFilterPanel" aria-hidden="true">
+              <div class="datatype-actions">
+                <button type="button" class="datatype-action-btn" id="rendererSelectAll">Select all</button>
+                <button type="button" class="datatype-action-btn" id="rendererDeselectAll">Deselect all</button>
+              </div>
+              <div class="datatype-checkboxes" id="rendererCheckboxes"></div>
+            </div>
+          </div>
+        </div>
+        <div class="control-group datatype-filter-wrap">
+          <label>Data types</label>
+          <div class="datatype-dropdown">
+            <button type="button" class="datatype-dropdown-btn" id="datatypeFilterBtn">Data types (all) &#9660;</button>
+            <div class="datatype-dropdown-panel" id="datatypeFilterPanel" aria-hidden="true">
+              <div class="datatype-actions">
+                <button type="button" class="datatype-action-btn" id="datatypeSelectAll">Select all</button>
+                <button type="button" class="datatype-action-btn" id="datatypeDeselectAll">Deselect all</button>
+              </div>
+              <div class="datatype-checkboxes" id="datatypeCheckboxes"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="dashboard-grid">
-        <div class="card chart-card">
-          <div class="card-header">
-            <h2 id="chartTitle">Loading...</h2>
-            <div class="chart-info">
-              <span id="chartRunCount" class="info-badge"></span>
-              <span id="chartDateRange" class="info-badge"></span>
+      <div id="compVersionBar" class="version-bar"></div>
+
+      <div id="comparisonContent"></div>
+    </div>
+
+    <!-- ===== PERFORMANCE HISTORY TAB ===== -->
+    <div id="historyPanel" class="tab-panel">
+      <div class="controls">
+        <div class="control-group">
+          <label for="taskSelectHist">Task</label>
+          <select id="taskSelectHist"></select>
+        </div>
+        <div class="control-group">
+          <label for="workflowSelectHist">Workflow</label>
+          <select id="workflowSelectHist"></select>
+        </div>
+        <div class="control-group">
+          <label for="metricSelectHist">Metric</label>
+          <select id="metricSelectHist"></select>
+        </div>
+        <div class="control-group datatype-filter-wrap">
+          <label>Physics</label>
+          <div class="datatype-dropdown">
+            <button type="button" class="datatype-dropdown-btn" id="physicsFilterBtnHist">Physics (all) &#9660;</button>
+            <div class="datatype-dropdown-panel" id="physicsFilterPanelHist" aria-hidden="true">
+              <div class="datatype-actions">
+                <button type="button" class="datatype-action-btn" id="physicsSelectAllHist">Select all</button>
+                <button type="button" class="datatype-action-btn" id="physicsDeselectAllHist">Deselect all</button>
+              </div>
+              <div class="datatype-checkboxes" id="physicsCheckboxesHist"></div>
             </div>
           </div>
-          <div class="chart-container">
-            <canvas id="mainChart"></canvas>
-          </div>
         </div>
-
-        <div class="card summary-card">
-          <div class="card-header">
-            <h2>Run Summary</h2>
-            <span id="summaryCommit" class="commit-badge"></span>
-          </div>
-          <div id="versionBar" class="version-bar"></div>
-          <div id="summaryContent" class="summary-content"></div>
-        </div>
-
-        <div class="card table-card">
-          <div class="card-header">
-            <h2>All Benchmarks Overview</h2>
-            <div class="table-controls">
-              <button id="btnShowRuntime" class="tab-btn active" data-section="runtime">Runtime</button>
-              <button id="btnShowStartup" class="tab-btn" data-section="startup">Startup</button>
+        <div class="control-group datatype-filter-wrap">
+          <label>Renderer</label>
+          <div class="datatype-dropdown">
+            <button type="button" class="datatype-dropdown-btn" id="rendererFilterBtnHist">Renderer (all) &#9660;</button>
+            <div class="datatype-dropdown-panel" id="rendererFilterPanelHist" aria-hidden="true">
+              <div class="datatype-actions">
+                <button type="button" class="datatype-action-btn" id="rendererSelectAllHist">Select all</button>
+                <button type="button" class="datatype-action-btn" id="rendererDeselectAllHist">Deselect all</button>
+              </div>
+              <div class="datatype-checkboxes" id="rendererCheckboxesHist"></div>
             </div>
           </div>
-          <div class="table-wrapper">
-            <table id="overviewTable">
-              <thead><tr id="overviewHeader"></tr></thead>
-              <tbody id="overviewBody"></tbody>
-            </table>
+        </div>
+        <div class="control-group datatype-filter-wrap">
+          <label>Data types</label>
+          <div class="datatype-dropdown">
+            <button type="button" class="datatype-dropdown-btn" id="datatypeFilterBtnHist">Data types (all) &#9660;</button>
+            <div class="datatype-dropdown-panel" id="datatypeFilterPanelHist" aria-hidden="true">
+              <div class="datatype-actions">
+                <button type="button" class="datatype-action-btn" id="datatypeSelectAllHist">Select all</button>
+                <button type="button" class="datatype-action-btn" id="datatypeDeselectAllHist">Deselect all</button>
+              </div>
+              <div class="datatype-checkboxes" id="datatypeCheckboxesHist"></div>
+            </div>
           </div>
         </div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="card-header">
+          <h2 id="histChartTitle">Loading...</h2>
+          <div class="chart-info">
+            <span id="histRunCount" class="info-badge"></span>
+            <span id="histRangeSummary" class="info-badge"></span>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="histChart"></canvas>
+        </div>
+      </div>
+
+      <div id="histRunDetail" class="card summary-card" style="display:none">
+        <div class="card-header">
+          <h2>Run Detail</h2>
+          <span id="histCommitBadge" class="commit-badge"></span>
+        </div>
+        <div id="histVersionBar" class="version-bar"></div>
+        <div id="histSummaryContent" class="summary-content"></div>
+      </div>
+
+      <div id="allTasksOverview"></div>
+
+      <div id="benchmarkStatusGrid"></div>
+    </div>
+
+    <!-- ===== INFO TAB ===== -->
+    <div id="infoPanel" class="tab-panel">
+      <div class="card info-card">
+        <div class="card-header">
+          <h2>Benchmark environment</h2>
+        </div>
+        <p class="info-note">Environment for the selected GPU (from latest run in dataset).</p>
+        <div id="infoBenchmarkEnv" class="info-env-grid"></div>
+      </div>
+      <div class="card info-card">
+        <div class="card-header">
+          <h2>Data type presets</h2>
+        </div>
+        <p class="info-intro">These presets control what kind of image the camera captures. Different types produce different visual information and have different rendering costs.</p>
+        <h3 class="info-h3">3-channel output (color images)</h3>
+        <ul class="info-list">
+          <li><strong>rgb</strong> — The fully rendered color image. Includes all lighting effects like reflections, shadows, and global illumination. Most realistic but slowest to render.</li>
+          <li><strong>albedo</strong> — The raw surface color of objects, with no lighting or shadows applied. Useful for fast rendering when you only need texture colors.</li>
+          <li><strong>simple_shading_constant_diffuse</strong> — All surfaces are drawn with a single flat color, ignoring textures and materials. Simplest and fastest shading mode.</li>
+          <li><strong>simple_shading_diffuse_mdl</strong> — Surfaces use their assigned material textures for color, but without reflections or advanced lighting.</li>
+          <li><strong>simple_shading_full_mdl</strong> — Uses full material properties (specular highlights, roughness, etc.). More detailed than the other simple shading modes, but still faster than full rgb rendering.</li>
+        </ul>
+        <h3 class="info-h3">1-channel output</h3>
+        <ul class="info-list">
+          <li><strong>depth</strong> — Distance from the camera to each pixel, stored as a single floating-point value per pixel.</li>
+        </ul>
+        <h3 class="info-h3">Renderer support</h3>
+        <ul class="info-list">
+          <li><strong>IsaacRtx (isaacsim_rtx_renderer)</strong> — Supports all data types.</li>
+          <li><strong>Newton Warp (newton_sensors)</strong> — Supports rgb, albedo, depth, normals, and more. Some environments restrict to rgb and depth only.</li>
+          <li><strong>OVRTX (ovrtx_renderer)</strong> — Supports rgb, albedo, depth, semantic segmentation, and simple shading modes.</li>
+        </ul>
       </div>
     </div>
   </main>
 
   <footer>
-    <p>Isaac Lab Performance Dashboard &middot; Data sourced from internal CI/CD benchmarks</p>
+    <p>Isaac Lab Presets Performance Dashboard &middot; Data sourced from internal CI/CD benchmarks</p>
   </footer>
 
   <div id="loadingOverlay" class="loading-overlay">
@@ -137,6 +233,10 @@
     <p>Loading benchmark data...</p>
   </div>
 
-  <script src="js/dashboard.js"></script>
+  <script>
+    const s = document.createElement('script');
+    s.src = 'js/dashboard.js?v=' + _v;
+    document.body.appendChild(s);
+  </script>
 </body>
 </html>
