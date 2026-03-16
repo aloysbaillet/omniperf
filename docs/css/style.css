@@ -790,6 +790,23 @@ select:focus { outline: 1px solid var(--accent); }
   position: relative;
   height: 420px;
 }
+.scaling-category-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 240px 0 14px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+}
+.scaling-category-heading:first-child { margin-top: 0; }
+.scaling-category-sub {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
 
 .toast-container {
   position: fixed;

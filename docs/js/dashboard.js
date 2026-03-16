@@ -492,14 +492,15 @@
           if (!wfTaskMap[wfKey]) wfTaskMap[wfKey] = { workflow: b.workflow, rawTask };
 
           const repMetric = getRepFpsMetric(b.workflow);
-          const val = b.runtime?.[repMetric] ?? b.train?.[repMetric];
-          if (val == null) continue;
+          const val = b.runtime?.[repMetric] ?? b.train?.[repMetric] ?? null;
+          const memMetric = b.runtime?.["GPU Memory Used"] ?? b.train?.["GPU Memory Used"] ?? null;
+          if (val == null && memMetric == null) continue;
 
           const pp = parsePreset(entry.preset);
           const presetLabel = `${pp.physics} / ${pp.renderer} / ${pp.datatype}`;
           const fullKey = `${wfKey}||${presetLabel}||${numEnvs}`;
           if (!presetValues[fullKey]) {
-            presetValues[fullKey] = { wfKey, presetLabel, numEnvs, val };
+            presetValues[fullKey] = { wfKey, presetLabel, numEnvs, val, mem: memMetric };
           }
         }
       }
@@ -511,16 +512,33 @@
       return;
     }
 
+    const gpuTotalMemGb = data.runs[state.scalingRunIndex]?.env_info?.gpu_total_memory_gb || 0;
+    const pendingMemCharts = [];
+
+    const useLinear = state.scalingLinearX;
+
+    const fpsHeading = document.createElement("div");
+    fpsHeading.className = "scaling-category-heading";
+    fpsHeading.innerHTML = "<span>FPS Performance</span>";
+    container.appendChild(fpsHeading);
+
     for (const wfKey of wfTaskKeys) {
       const { workflow, rawTask } = wfTaskMap[wfKey];
       const repMetric = getRepFpsMetric(workflow);
 
       const chartData = {};
+      const memData = {};
       for (const fk of Object.keys(presetValues)) {
         const pv = presetValues[fk];
         if (pv.wfKey !== wfKey) continue;
-        if (!chartData[pv.presetLabel]) chartData[pv.presetLabel] = {};
-        chartData[pv.presetLabel][pv.numEnvs] = pv.val;
+        if (pv.val != null) {
+          if (!chartData[pv.presetLabel]) chartData[pv.presetLabel] = {};
+          chartData[pv.presetLabel][pv.numEnvs] = pv.val;
+        }
+        if (pv.mem != null) {
+          if (!memData[pv.presetLabel]) memData[pv.presetLabel] = {};
+          memData[pv.presetLabel][pv.numEnvs] = pv.mem;
+        }
       }
 
       const presetLabels = Object.keys(chartData)
@@ -546,7 +564,6 @@
       section.appendChild(canvasWrap);
       container.appendChild(section);
 
-      const useLinear = state.scalingLinearX;
       let chartConfig;
 
       if (useLinear) {
@@ -650,6 +667,119 @@
 
       const chart = new Chart(canvas, chartConfig);
       scalingCharts.push(chart);
+
+      const memPresetLabels = Object.keys(memData).filter((pl) => Object.keys(memData[pl]).length >= 2).sort();
+      if (memPresetLabels.length > 0) {
+        pendingMemCharts.push({ rawTask, wfShort, memData, memPresetLabels, presetLabels });
+      }
+    }
+
+    if (pendingMemCharts.length > 0) {
+      const memHeading = document.createElement("div");
+      memHeading.className = "scaling-category-heading";
+      memHeading.innerHTML = `<span>GPU Memory Usage</span><span class="scaling-category-sub">${gpuTotalMemGb ? `Total VRAM: ${formatNumber(gpuTotalMemGb)} GB` : ""}</span>`;
+      container.appendChild(memHeading);
+
+      for (const { rawTask, wfShort, memData: md, memPresetLabels: mpl } of pendingMemCharts) {
+        const memSection = document.createElement("div");
+        memSection.className = "card scaling-chart-card";
+        const memTitle = document.createElement("div");
+        memTitle.className = "scaling-chart-title";
+        memTitle.textContent = `${rawTask} — ${wfShort}`;
+        memSection.appendChild(memTitle);
+        const memMetricLabel = document.createElement("div");
+        memMetricLabel.className = "scaling-chart-metric";
+        memMetricLabel.textContent = "GPU Memory Used (GB)";
+        memSection.appendChild(memMetricLabel);
+        const memCanvasWrap = document.createElement("div");
+        memCanvasWrap.className = "scaling-canvas-wrap";
+        const memCanvas = document.createElement("canvas");
+        memCanvasWrap.appendChild(memCanvas);
+        memSection.appendChild(memCanvasWrap);
+        container.appendChild(memSection);
+
+        let memChartConfig;
+        if (useLinear) {
+          const memDatasets = mpl.map((preset, idx) => {
+            const points = activeEnvSizes
+              .filter((e) => md[preset]?.[e] != null)
+              .map((e) => ({ x: e, y: md[preset][e] }));
+            const color = PRESET_COLORS[idx % PRESET_COLORS.length];
+            return { label: preset, data: points, borderColor: color, backgroundColor: color + "40", borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 10, tension: 0.3 };
+          });
+          memChartConfig = {
+            type: "line",
+            data: { datasets: memDatasets },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "nearest", intersect: true },
+              plugins: {
+                legend: { position: "right", labels: { color: "#8b949e", font: { size: 10 }, boxWidth: 12, padding: 8 } },
+                tooltip: {
+                  backgroundColor: "#1c2128", titleColor: "#e6edf3", bodyColor: "#e6edf3", borderColor: "#30363d", borderWidth: 1,
+                  callbacks: {
+                    title: (items) => `${items[0].parsed.x.toLocaleString()} envs`,
+                    label: (ctx) => `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y)} GB`,
+                  },
+                },
+              },
+              scales: {
+                x: {
+                  type: "linear",
+                  title: { display: true, text: "Number of Environments", color: "#8b949e", font: { size: 11 } },
+                  afterBuildTicks: (axis) => { axis.ticks = activeEnvSizes.map((v) => ({ value: v })); },
+                  ticks: { color: "#8b949e", font: { size: 10 }, callback: (v) => v >= 1000 ? `${(v/1024).toFixed(0)}K` : v },
+                  grid: { color: "rgba(48,54,61,0.5)" },
+                  min: activeEnvSizes[0], max: activeEnvSizes[activeEnvSizes.length - 1],
+                },
+                y: {
+                  title: { display: true, text: "GPU Memory (GB)", color: "#8b949e", font: { size: 11 } },
+                  ticks: { color: "#8b949e", font: { size: 11 } },
+                  grid: { color: "rgba(48,54,61,0.5)" },
+                  min: 0, max: gpuTotalMemGb > 0 ? gpuTotalMemGb : undefined,
+                },
+              },
+            },
+          };
+        } else {
+          const memLabels = activeEnvSizes.map((e) => e.toLocaleString());
+          const memDatasets = mpl.map((preset, idx) => {
+            const vals = activeEnvSizes.map((e) => md[preset]?.[e] ?? null);
+            const color = PRESET_COLORS[idx % PRESET_COLORS.length];
+            return { label: preset, data: vals, borderColor: color, backgroundColor: color + "40", borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 10, tension: 0.3, spanGaps: true };
+          });
+          memChartConfig = {
+            type: "line",
+            data: { labels: memLabels, datasets: memDatasets },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "nearest", intersect: true },
+              plugins: {
+                legend: { position: "right", labels: { color: "#8b949e", font: { size: 10 }, boxWidth: 12, padding: 8 } },
+                tooltip: {
+                  backgroundColor: "#1c2128", titleColor: "#e6edf3", bodyColor: "#e6edf3", borderColor: "#30363d", borderWidth: 1,
+                  callbacks: { label: (ctx) => `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y)} GB` },
+                },
+              },
+              scales: {
+                x: {
+                  title: { display: true, text: "Number of Environments", color: "#8b949e", font: { size: 11 } },
+                  ticks: { color: "#8b949e", font: { size: 10 } },
+                  grid: { color: "rgba(48,54,61,0.5)" },
+                },
+                y: {
+                  title: { display: true, text: "GPU Memory (GB)", color: "#8b949e", font: { size: 11 } },
+                  ticks: { color: "#8b949e", font: { size: 11 } },
+                  grid: { color: "rgba(48,54,61,0.5)" },
+                  min: 0, max: gpuTotalMemGb > 0 ? gpuTotalMemGb : undefined,
+                },
+              },
+            },
+          };
+        }
+        const memChart = new Chart(memCanvas, memChartConfig);
+        scalingCharts.push(memChart);
+      }
     }
   }
 
