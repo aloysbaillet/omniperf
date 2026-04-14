@@ -86,8 +86,8 @@ Mixing them up is a common source of silent misconfiguration.
 - `*.tracy` / `*.nsys-rep` — profiling traces (only with profiling args)
 
 ### JSON structure
-Top-level keys: `benchmark_info` (task, envs, frames), `startup` (launch time, scene creation, sim start),
-`runtime` (step times, FPS, effective FPS, GPU/CPU/memory utilization), `hardware_info` (CPU, GPU, CUDA version).
-RL benchmarks add `train` (rewards, iterations).
+Array of phase objects, each with `phase_name`, `measurements` (list of `{name, data, type, unit}`),
+and `metadata` (list of `{name, data, type}`). Phases: `benchmark_info`, `startup`, `runtime`,
+`hardware_info`, `version_info`. RL benchmarks add a `train` phase.
 
 ---

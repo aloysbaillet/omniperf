@@ -78,7 +78,10 @@ Patch BEFORE running any benchmark:
 # Find simulation_app.py — path varies between source and build layouts:
 #   Source build: source/extensions/isaacsim.simulation_app/isaacsim/simulation_app/simulation_app.py
 #   Build output: _build/linux-x86_64/release/exts/isaacsim.simulation_app/isaacsim/simulation_app/simulation_app.py
-SIM_APP=$(find <package_path> -path "*/isaacsim/simulation_app/simulation_app.py" -not -path "*/__pycache__/*" | head -1)
+# NOTE: `find -path` may fail in some environments (dots in dir names). Use glob instead:
+SIM_APP=$(echo <package_path>/**/isaacsim/simulation_app/simulation_app.py | tr ' ' '\n' | grep -v __pycache__ | head -1)
+# Or explicit known paths:
+# SIM_APP=<package_path>/_build/linux-x86_64/release/exts/isaacsim.simulation_app/isaacsim/simulation_app/simulation_app.py
 echo "Found: $SIM_APP"
 
 # Insert os._exit(0) as first line of the close() method body.
@@ -200,8 +203,8 @@ GROUP BY zone_name ORDER BY total_ms DESC LIMIT 30;
 ### Tracy CSV Export (alternative analysis path)
 ```bash
 csvexport profile.tracy > zones.csv
-# Columns: name, src_file, src_line, ns_since_start, exec_time_ns, ...
-sort -t',' -k5 -rn zones.csv | head -50
+# Columns: name, src_file, src_line, total_ns, total_perc, counts, mean_ns, min_ns, max_ns, std_ns
+sort -t',' -k4 -rn zones.csv | head -50
 ```
 
 ---

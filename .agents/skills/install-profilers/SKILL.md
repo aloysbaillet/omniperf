@@ -9,8 +9,8 @@ description: Install profiling tools for Isaac Sim / Isaac Lab / Kit-based appli
 
 ```bash
 nsys --version 2>/dev/null && echo "nsys: OK" || echo "nsys: MISSING"
-csvexport --version 2>/dev/null && echo "csvexport: OK" || echo "csvexport: MISSING"
-tracy-capture --version 2>/dev/null && echo "tracy-capture: OK" || echo "tracy-capture: MISSING"
+csvexport --help 2>/dev/null && echo "csvexport: OK" || echo "csvexport: MISSING"
+which tracy-capture >/dev/null 2>&1 && echo "tracy-capture: OK" || echo "tracy-capture: MISSING"
 sqlite3 --version 2>/dev/null && echo "sqlite3: OK" || echo "sqlite3: MISSING"
 ```
 
@@ -202,9 +202,9 @@ wait $CAPTURE_PID
 
 ```bash
 csvexport trace.tracy > zones.csv
-# Columns: name, src_file, src_line, ns_since_start, exec_time_ns, ...
-# Sort by execution time descending:
-sort -t',' -k5 -rn zones.csv | head -50
+# Columns: name, src_file, src_line, total_ns, total_perc, counts, mean_ns, min_ns, max_ns, std_ns
+# Sort by total time descending:
+sort -t',' -k4 -rn zones.csv | head -50
 ```
 
 ---
