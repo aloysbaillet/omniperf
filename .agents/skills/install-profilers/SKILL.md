@@ -209,19 +209,6 @@ sort -t',' -k5 -rn zones.csv | head -50
 
 ---
 
-## 4. nsys-analyzer (optional — Rust-based, if available)
-
-`nsys-analyzer` is a specialized CLI for `.nsys-rep`, `.sqlite`, and `.tracy` analysis.
-See the `nsys-analyze` skill for usage.
-
-<!-- TODO: Update when nsys-analyzer has a public release -->
-
-If not publicly available yet, use the manual analysis path:
-- **For .tracy files:** `csvexport` → CSV → Python/awk pivot
-- **For .nsys-rep files:** `nsys export --type=sqlite` → `sqlite3` queries
-
----
-
 ## Verification Checklist
 
 After installation, verify the full toolchain:
