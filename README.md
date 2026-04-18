@@ -75,6 +75,19 @@ To enable GitHub Pages for a fresh clone:
 - **Chart.js 4.4.7** is loaded from CDN (no npm install needed)
 - **Python 3** for local development server
 
+## Agent Skills
+
+This repo ships a set of [Claude Code agent skills](.agents/skills/) for working with Isaac Sim, Isaac Lab, and their profiling tools. They encode install steps, benchmark recipes, and profile-analysis workflows validated from live testing.
+
+- [install-isaacsim](.agents/skills/install-isaacsim/SKILL.md) — install Isaac Sim via pip or source build
+- [install-isaaclab](.agents/skills/install-isaaclab/SKILL.md) — install Isaac Lab and link it to Isaac Sim
+- [install-profilers](.agents/skills/install-profilers/SKILL.md) — set up Nsight Systems, Tracy, and related tooling
+- [benchmark-isaacsim](.agents/skills/benchmark-isaacsim/SKILL.md) — run Isaac Sim benchmarks
+- [benchmark-isaaclab](.agents/skills/benchmark-isaaclab/SKILL.md) — run Isaac Lab RL and environment benchmarks
+- [profiling](.agents/skills/profiling/SKILL.md) — capture traces with Tracy and Nsight Systems
+- [nsys-analyze](.agents/skills/nsys-analyze/SKILL.md) — analyze Kit-based `.nsys-rep` profiles and compare versions
+- [diagnose-perf](.agents/skills/diagnose-perf/SKILL.md) — first-responder triage for slow FPS, stutter, or latency
+
 ## Security
 
 - Vulnerability disclosure: See `SECURITY.md`
