@@ -215,21 +215,6 @@ sort -t',' -k4 -rn zones.csv | head -50
 
 # CPU Governor — Performance Mode
 
-## MANDATORY: Set Before ANY Benchmark
-
-```bash
-# Check
-cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor | sort | uniq -c
-
-# Set
-echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-
-# Verify
-cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor | sort | uniq -c
-```
-
-- Not persistent across reboots
-- Requires sudo
-- Dynamic governors (`ondemand`, `schedutil`) cause inconsistent benchmark results
+**MANDATORY before any benchmark.** See the `perf-tuning` skill for commands and details.
 
 ---
