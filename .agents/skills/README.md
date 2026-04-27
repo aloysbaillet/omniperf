@@ -57,4 +57,6 @@ Specialized profiling:
 
 Each skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `description`) and markdown instructions. Optional subdirectories: `references/` for detailed docs loaded on-demand, `scripts/` for executable helpers.
 
-See [dev/docs/profiling-guide.md](../../dev/docs/profiling-guide.md) for the source material behind the profiling skills.
+## Sources
+
+The profiling-related skills (`profiling`, `profiling-api`, `perf-tuning`, `tracy-memory`, `nvtx-python`) were derived from [dev/docs/profiling-guide.md](../../dev/docs/profiling-guide.md). The remaining skills (`install-*`, `benchmark-*`, `diagnose-perf`, `nsys-analyze`) were authored independently.
