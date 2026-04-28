@@ -9,24 +9,24 @@ Agent skills for performance engineering across the NVIDIA Omniverse stack (Isaa
 | Skill | Description |
 |---|---|
 | [install-isaacsim](install-isaacsim/) | Install Isaac Sim via pip, source build, or Docker |
-| [install-isaaclab](install-isaaclab/) | Install Isaac Lab with conda and link Isaac Sim |
-| [install-profilers](install-profilers/) | Install nsys, Tracy (csvexport, capture), and sqlite3 |
+| [install-isaaclab](install-isaaclab/) | Install Isaac Lab for full Isaac Sim-backed or kit-less/Newton workflows |
+| [install-profilers](install-profilers/) | Install nsys, sqlite3, Tracy csvexport/capture, and tracy-update |
 
 ### Benchmarking
 
 | Skill | Description |
 |---|---|
-| [benchmark-isaacsim](benchmark-isaacsim/) | Run Isaac Sim benchmarks (camera, SDG, robots, sensors) |
-| [benchmark-isaaclab](benchmark-isaaclab/) | Run Isaac Lab benchmarks (RL training, env step FPS, cameras) |
+| [benchmark-isaacsim](benchmark-isaacsim/) | Run Isaac Sim benchmark scripts and interpret outputs |
+| [benchmark-isaaclab](benchmark-isaaclab/) | Run Isaac Lab throughput/camera/startup benchmarks and interpret outputs |
 
 ### Profiling & Analysis
 
 | Skill | Description |
 |---|---|
-| [profiling](profiling/) | Capture traces with Tracy and Nsight Systems |
+| [profiling](profiling/) | Capture Tracy/nsys traces and hand off exports for analysis |
 | [profiling-api](profiling-api/) | Add profiling zones to C++/Python code (macros, API, masks, channels) |
 | [nsys-analyze](nsys-analyze/) | Analyze captured traces (NVTX zones, phase detection, version comparison) |
-| [tracy-memory](tracy-memory/) | Profile CPU/GPU memory allocations via Tracy |
+| [tracy-memory](tracy-memory/) | Profile CPU/GPU memory allocations via Tracy memory channels |
 | [nvtx-python](nvtx-python/) | Python function tracing with NVTX for non-Kit environments |
 
 ### Performance
@@ -45,6 +45,7 @@ install-isaacsim  ──→ benchmark-isaacsim ──→ diagnose-perf (quick tr
 install-isaaclab  ──→ benchmark-isaaclab     │
 install-profilers                            ├→ profiling (capture traces)
                                              ├→ nsys-analyze (analyze traces)
+                                             ├→ tracy-memory (memory allocation traces)
                                              └→ perf-tuning (apply fixes)
 ```
 
@@ -52,6 +53,12 @@ Specialized profiling:
 - **profiling-api** — when writing new code that needs profiling zones
 - **tracy-memory** — when investigating memory leaks or allocation hotspots
 - **nvtx-python** — when profiling Python in standalone Isaac Lab (no Kit runtime)
+
+Routing boundaries:
+- Use **benchmark-*** skills to run benchmark scripts and read benchmark outputs, not to diagnose or fix bottlenecks.
+- Use **diagnose-perf** for first-pass bottleneck triage before full profiling.
+- Use **profiling** to capture Tracy/nsys traces; use **nsys-analyze** for deeper trace analysis.
+- Use **perf-tuning** only after the bottleneck category or trace evidence is known.
 
 ## Adding Skills
 

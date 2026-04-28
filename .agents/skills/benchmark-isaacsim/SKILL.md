@@ -1,6 +1,6 @@
 ---
 name: benchmark-isaacsim
-description: Run Isaac Sim benchmarks. Covers setup, known pitfalls, and performance optimization tips. Use when the user asks to benchmark Isaac Sim, compare versions, or test performance.
+description: Run Isaac Sim benchmark scripts and interpret benchmark outputs. Covers camera, SDG, scene-loading, robot, lidar/radar/sensor benchmark scripts, common parameters, output files, and benchmark-specific pitfalls. Use when the user asks to run or compare Isaac Sim benchmark results. NOT for initial bottleneck triage (use diagnose-perf), profiling capture (use profiling), trace analysis (use nsys-analyze), or applying performance fixes (use perf-tuning).
 ---
 
 # Isaac Sim Benchmarking

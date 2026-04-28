@@ -1,6 +1,6 @@
 ---
 name: tracy-memory
-description: Profile CPU and GPU memory allocations using Tracy in Kit-based applications. Covers LD_PRELOAD setup for liballocwrapper.so, Kit flags for CPU/GPU memory channels, capture binary isolation (unset LD_PRELOAD), strip test verification, and debug symbol requirements. Use when investigating memory leaks, allocation hotspots, or VRAM growth in Isaac Sim, Isaac Lab, or Kit apps via Tracy's Memory tab.
+description: Profile CPU and GPU memory allocations using Tracy in Kit-based applications after Tracy capture tooling is installed. Covers LD_PRELOAD setup for liballocwrapper.so, Kit memory-channel flags, capture binary isolation (unset LD_PRELOAD), tracy-update strip-test verification, Tracy Memory tab analysis, and debug symbol requirements. Use when investigating memory leaks, allocation hotspots, or VRAM growth in Isaac Sim, Isaac Lab, or Kit apps. Requires profiling capture setup plus install-profilers. NOT for generic trace capture (use profiling) or non-memory trace analysis (use nsys-analyze).
 ---
 
 # Tracy Memory Profiling for Kit-Based Applications

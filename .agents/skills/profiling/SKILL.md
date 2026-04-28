@@ -1,6 +1,6 @@
 ---
 name: profiling
-description: Capture performance traces using Tracy and Nsight Systems for Kit-based applications (Isaac Sim, Isaac Lab, Kit SDK). Covers Tracy capture sequence (port management, last-resort shutdown workaround), nsys profile commands, Kit args for each backend, CPU governor setup, and the COLD/WARM/TRACE methodology. Use when running profiling captures, setting up trace collection, or troubleshooting capture failures. NOT for adding profiling zones to code (use profiling-api skill) or analyzing captured traces (use nsys-analyze skill).
+description: Capture performance traces using Tracy and Nsight Systems for Kit-based applications (Isaac Sim, Isaac Lab, Kit SDK). Covers COLD/WARM/TRACE measurement separation, Tracy capture sequence, last-resort shutdown handling, nsys profile commands, Kit profiler args, and lightweight export handoff to nsys-analyze. Use when running profiling captures, setting up trace collection, or troubleshooting capture failures. NOT for adding profiling zones (use profiling-api), deep trace analysis (use nsys-analyze), memory allocation profiling (use tracy-memory), or applying performance fixes (use perf-tuning).
 ---
 
 # Profiling Guide

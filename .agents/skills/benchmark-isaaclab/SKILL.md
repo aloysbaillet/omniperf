@@ -1,6 +1,6 @@
 ---
 name: benchmark-isaaclab
-description: Run Isaac Lab benchmarks. Covers setup, RL training, environment step FPS, and convergence testing. Use when the user asks to benchmark Isaac Lab or test RL performance.
+description: Run Isaac Lab benchmark scripts and interpret their outputs. Covers RL training throughput, non-RL environment step FPS, camera/load/startup benchmarks, batch suites, parameter gotchas, output files, and JSON result structure. Use when the user asks to run or compare Isaac Lab benchmarks. NOT for RL convergence or policy-quality validation, profiling capture (use profiling), trace analysis (use nsys-analyze), or applying performance fixes (use perf-tuning).
 ---
 
 # Isaac Lab Benchmarking

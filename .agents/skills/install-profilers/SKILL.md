@@ -1,6 +1,6 @@
 ---
 name: install-profilers
-description: Install profiling tools for Isaac Sim / Isaac Lab / Kit-based applications. Covers Nsight Systems (nsys CLI), Tracy Profiler (`csvexport`, `tracy-capture`, optional `tracy-update`), and sqlite3 for nsys SQLite exports. Use when setting up a profiling environment, when nsys/tracy/csvexport/sqlite3 are missing, or before running the profiling or nsys-analyze skills.
+description: Install profiling tools for Isaac Sim / Isaac Lab / Kit-based applications. Covers Nsight Systems (`nsys` CLI), `sqlite3`, Tracy `csvexport`, `tracy-capture`, and `tracy-update` for memory strip tests. Use when setting up a profiling environment, when nsys/sqlite3/csvexport/tracy-capture/tracy-update are missing, or before running profiling, nsys-analyze, or tracy-memory.
 ---
 
 # Install Profilers for Omniverse / Kit Apps
