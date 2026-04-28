@@ -19,7 +19,7 @@ Overall status: `pass`
     "returncode": 0,
     "stdout": "carb profiler runtime smoke 332833500",
     "stderr": "",
-    "duration_s": 0.07
+    "duration_s": 0.068
   }
 }
 ```

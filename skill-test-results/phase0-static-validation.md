@@ -47,25 +47,25 @@
 
 ### `install-profilers`
 - line 22: `**Approval gates:** Commands that install packages, write `/usr/local/bin`, change `/proc/sys/kernel/perf_event_paranoid`, or create system symlinks are host mutations. Check first, then ask/obtain approval before running the `sudo` example`
-- line 37: `sudo dpkg -i nsight-systems-*.deb`
-- line 45: `sudo ./NsightSystems-linux-public-*.run --accept`
-- line 57: `sudo apt-get update`
-- line 59: `sudo apt-get install -y "$NSYS_PKG"`
-- line 70: `sudo ln -sf "$NSYS_BIN" /usr/local/bin/nsys`
-- line 79: `sudo dpkg -i cuda-keyring_1.1-1_all.deb`
-- line 80: `sudo apt-get update`
-- line 85: `sudo apt-get install -y "$NSYS_PKG"`
-- line 94: `sudo apt-get install -y nsight-systems-cli`
-- line 106: `sudo sh -c 'echo 2 > /proc/sys/kernel/perf_event_paranoid'`
-- line 109: `sudo sh -c 'echo kernel.perf_event_paranoid=2 > /etc/sysctl.d/99-nsys.conf'`
-- line 127: `sudo apt-get install -y sqlite3`
-- line 174: `sudo apt-get install -y build-essential cmake git libcapstone-dev`
-- line 183: `sudo cp csvexport/build/tracy-csvexport /usr/local/bin/csvexport`
-- line 189: `sudo cp capture/build/tracy-capture /usr/local/bin/capture`
-- line 190: `sudo ln -sf /usr/local/bin/capture /usr/local/bin/capture-release  # compatibility alias`
-- line 191: `sudo ln -sf /usr/local/bin/capture /usr/local/bin/tracy-capture    # optional compatibility alias`
-- line 196: `sudo cp update/build/tracy-update /usr/local/bin/update`
-- line 197: `sudo ln -sf /usr/local/bin/update /usr/local/bin/tracy-update  # optional compatibility alias`
+- line 38: `sudo dpkg -i nsight-systems.deb`
+- line 46: `sudo ./NsightSystems-linux-public-*.run --accept`
+- line 58: `sudo apt-get update`
+- line 60: `sudo apt-get install -y "$NSYS_PKG"`
+- line 71: `sudo ln -sf "$NSYS_BIN" /usr/local/bin/nsys`
+- line 80: `sudo dpkg -i cuda-keyring_1.1-1_all.deb`
+- line 81: `sudo apt-get update`
+- line 86: `sudo apt-get install -y "$NSYS_PKG"`
+- line 95: `sudo apt-get install -y nsight-systems-cli`
+- line 107: `sudo sh -c 'echo 2 > /proc/sys/kernel/perf_event_paranoid'`
+- line 110: `sudo sh -c 'echo kernel.perf_event_paranoid=2 > /etc/sysctl.d/99-nsys.conf'`
+- line 128: `sudo apt-get install -y sqlite3`
+- line 175: `sudo apt-get install -y build-essential cmake git libcapstone-dev`
+- line 184: `sudo cp csvexport/build/tracy-csvexport /usr/local/bin/csvexport`
+- line 190: `sudo cp capture/build/tracy-capture /usr/local/bin/capture`
+- line 191: `sudo ln -sf /usr/local/bin/capture /usr/local/bin/capture-release  # compatibility alias`
+- line 192: `sudo ln -sf /usr/local/bin/capture /usr/local/bin/tracy-capture    # optional compatibility alias`
+- line 197: `sudo cp update/build/tracy-update /usr/local/bin/update`
+- line 198: `sudo ln -sf /usr/local/bin/update /usr/local/bin/tracy-update  # optional compatibility alias`
 - ... 7 more
 
 ### `perf-tuning`
@@ -77,9 +77,11 @@
 - line 236: `Try without `sudo` first. Use `sudo -E` only when `perf_event_paranoid` blocks CPU sampling or system-wide OS runtime data, and only after confirming it is acceptable for the machine. In containers, `sudo` may not exist and GPU metrics may `
 - line 236: `Try without `sudo` first. Use `sudo -E` only when `perf_event_paranoid` blocks CPU sampling or system-wide OS runtime data, and only after confirming it is acceptable for the machine. In containers, `sudo` may not exist and GPU metrics may `
 - line 236: `Try without `sudo` first. Use `sudo -E` only when `perf_event_paranoid` blocks CPU sampling or system-wide OS runtime data, and only after confirming it is acceptable for the machine. In containers, `sudo` may not exist and GPU metrics may `
-- line 348: `sudo prlimit --nofile=65536:65536 /bin/bash -c \`
-- line 382: `For host-only CPU sampling/GPU metrics, add `--sample=system-wide --gpu-metrics-devices=all --gpuctxsw=true` only when the host allows it. Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approva`
-- line 382: `For host-only CPU sampling/GPU metrics, add `--sample=system-wide --gpu-metrics-devices=all --gpuctxsw=true` only when the host allows it. Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approva`
+- line 354: `# Raise the soft file-descriptor limit without sudo when the shell allows it.`
+- line 376: `# the same command with `sudo -E nsys profile ...`; do not use sudo by default.`
+- line 376: `# the same command with `sudo -E nsys profile ...`; do not use sudo by default.`
+- line 390: `For host-only CPU sampling/GPU metrics, add `--sample=system-wide --gpu-metrics-devices=all --gpuctxsw=true` only when the host allows it. Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approva`
+- line 390: `For host-only CPU sampling/GPU metrics, add `--sample=system-wide --gpu-metrics-devices=all --gpuctxsw=true` only when the host allows it. Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approva`
 
 ### `tracy-memory`
 - line 3: `description: Profile CPU and GPU memory allocations using Tracy in Kit-based applications after Tracy capture tooling is installed. Covers LD_PRELOAD setup for liballocwrapper.so, Kit memory-channel flags, capture binary isolation (unset LD`

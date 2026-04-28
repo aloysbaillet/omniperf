@@ -32,9 +32,10 @@ The `nsys` CLI captures GPU/CPU traces and exports `.nsys-rep` → SQLite.
 The profiling guide recommends the latest standalone Nsight Systems package because CUDA Toolkit packages may lag behind.
 
 ```bash
-# Check the latest version at https://developer.nvidia.com/nsight-systems
-wget https://developer.nvidia.com/downloads/assets/tools/secure/nsight-systems/2026_2/nsight-systems-2026.2.1_2026.2.1.210-1_amd64.deb
-sudo dpkg -i nsight-systems-*.deb
+# Get the current .deb URL from https://developer.nvidia.com/nsight-systems.
+# Do not blindly reuse stale versioned URLs from old docs.
+wget '<nsight-systems-current-linux-amd64.deb-url-from-download-page>' -O nsight-systems.deb
+sudo dpkg -i nsight-systems.deb
 nsys --version
 ```
 

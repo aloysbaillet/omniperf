@@ -61,8 +61,9 @@ Test plan: `.agents/skills/TEST_PLAN.md`
 - `profiling-api`: made manual begin/end examples exception-safe.
 - `benchmark-isaacsim` / `benchmark-isaaclab`: added install discovery gates before benchmarks; Isaac Sim now checks for source-tree benchmark scripts; Isaac Lab handles version-dependent `--headless` vs `--viz none`.
 - `install-isaacsim` / `install-isaaclab`: added check-before-install and target-env verification guidance, including pip runtime vs source benchmark-script distinction; destructive cleanup/env removal is explicitly approval-gated.
-- `install-profilers`: fixed Tracy 0.11.x CMake target names and robust Nsight Systems symlink discovery; privileged installs/sysctl changes are explicitly approval-gated.
+- `install-profilers`: fixed Tracy 0.11.x CMake target names and robust Nsight Systems symlink discovery; privileged installs/sysctl changes are explicitly approval-gated; standalone Nsight URL is no longer hard-coded to a stale version.
 - `diagnose-perf` / `perf-tuning`: triage stays read-only; host-level governor/sysctl/persistence changes are opt-in and container limitations should be recorded instead of forced.
+- `profiling` / `nvtx-python`: removed stale Tracy build-path guidance, avoided Isaac Sim `--headless` ambiguity in Nsight examples, removed default `sudo prlimit`, and made NVTX helper setup copy-paste-safe.
 
 ## Remaining Blocks / Warnings
 

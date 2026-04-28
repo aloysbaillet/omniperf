@@ -45,28 +45,28 @@
         "returncode": 0,
         "stdout": "/home/horde/.openclaw/workspace/IsaacLab/isaaclab.sh",
         "stderr": "",
-        "duration_s": 0.109
+        "duration_s": 0.107
       },
       "isaaclab_verify": {
         "cmd": "if [ -x /home/horde/.openclaw/workspace/IsaacLab/isaaclab.sh ]; then env TERM=xterm bash -lc 'cd /home/horde/.openclaw/workspace/IsaacLab && ./isaaclab.sh -p -c \"import isaaclab; print(\\\"Isaac Lab OK\\\")\"'; else echo \"no known isaaclab.sh\"; exit 42; fi",
         "returncode": 0,
         "stdout": "\u001b[3g\n\u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH    \u001bH   \n[INFO] Using python from: /home/horde/.openclaw/workspace/IsaacLab/_isaac_sim/python.sh\nIsaac Lab OK",
         "stderr": "",
-        "duration_s": 0.039
+        "duration_s": 0.04
       },
       "conda": {
         "cmd": "command -v conda && conda --version",
         "returncode": 0,
         "stdout": "/usr/local/bin/conda\nconda 26.1.1",
         "stderr": "",
-        "duration_s": 0.522
+        "duration_s": 0.495
       },
       "uv": {
         "cmd": "command -v uv && uv --version",
         "returncode": 0,
         "stdout": "/home/horde/.local/bin/uv\nuv 0.11.8 (x86_64-unknown-linux-gnu)",
         "stderr": "",
-        "duration_s": 0.005
+        "duration_s": 0.006
       }
     }
   }

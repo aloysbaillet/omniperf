@@ -70,7 +70,7 @@
         "returncode": 0,
         "stdout": "NVIDIA Nsight Systems version 2025.6.3.541-256337736014v0",
         "stderr": "",
-        "duration_s": 0.072
+        "duration_s": 0.07
       },
       "sqlite3": {
         "cmd": "sqlite3 --version 2>&1 | head -5",
@@ -84,14 +84,14 @@
         "returncode": 0,
         "stdout": "Extract statistics from a trace to a CSV format\nUsage:\n  extract [OPTION...] <trace file>\n\n  -h, --help        Print usage",
         "stderr": "",
-        "duration_s": 0.003
+        "duration_s": 0.002
       },
       "tracy-capture": {
         "cmd": "tracy-capture --version 2>&1 | head -5",
         "returncode": 0,
         "stdout": "Usage: capture -o output.tracy [-a address] [-p port] [-f] [-s seconds] [-m memlimit]",
         "stderr": "",
-        "duration_s": 0.003
+        "duration_s": 0.004
       },
       "tracy-update": {
         "cmd": "tracy-update --version 2>&1 | head -5",
@@ -105,7 +105,7 @@
         "returncode": 0,
         "stdout": "Usage: update [options] input.tracy output.tracy\n\n  -4: enable LZ4 compression\n  -h: enable LZ4HC compression\n  -e: enable extreme LZ4HC compression (very slow)",
         "stderr": "",
-        "duration_s": 0.002
+        "duration_s": 0.003
       },
       "capture": {
         "cmd": "capture --version 2>&1 | head -5",
@@ -119,7 +119,7 @@
         "returncode": 0,
         "stdout": "Usage: capture -o output.tracy [-a address] [-p port] [-f] [-s seconds] [-m memlimit]",
         "stderr": "",
-        "duration_s": 0.003
+        "duration_s": 0.004
       }
     }
   }

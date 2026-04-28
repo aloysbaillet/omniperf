@@ -81,7 +81,7 @@ Tracy capture is error-prone. Follow this exact sequence to avoid port conflicts
 
 **Tracy port:** default is `8086`; Isaac Sim 6.0+ commonly uses `8087` to avoid OV Hub. Kit auto-increments to `8087`, `8088`, etc. on conflict. Set `TRACY_PORT` when you know the port.
 
-**Tracy capture binary:** use the bundled `omni.kit.profiler.tracy` capture binary when available, or build Tracy 0.11.1 from source (`capture/build/unix/capture-release`).
+**Tracy capture binary:** use the bundled `omni.kit.profiler.tracy` capture binary when available, or build Tracy 0.11.1 from source and resolve `capture` / `capture-release` / `tracy-capture` from PATH. See `install-profilers`; do not hard-code stale Tracy build paths.
 
 #### Step-by-step:
 ```bash
@@ -252,7 +252,8 @@ nsys profile \
   --trace=nvtx,vulkan,cuda,osrt \
   --gpuctxsw=false \
   ./python.sh standalone_examples/benchmarks/benchmark_camera.py \
-  --num-cameras 1 --num-frames 100 --headless \
+  --num-cameras 1 --num-frames 100 \
+  --no-window --/app/window/hideUi=True \
   --/app/profileFromStart=true --/profiler/enabled=true \
   --/app/profilerBackend=nvtx --/app/profilerMask=1 \
   --/plugins/carb.profiler-tracy.plugin/fibersAsThreads=false \
@@ -284,7 +285,8 @@ nsys profile \
   --cuda-memory-usage=true \
   --cuda-graph-trace=graph:host-and-device \
   ./python.sh standalone_examples/benchmarks/benchmark_camera.py \
-  --num-cameras 1 --num-frames 100 --headless \
+  --num-cameras 1 --num-frames 100 \
+  --no-window --/app/window/hideUi=True \
   --/app/profileFromStart=true --/profiler/enabled=true \
   --/app/profilerBackend=nvtx --/app/profilerMask=1 \
   --/plugins/carb.profiler-tracy.plugin/fibersAsThreads=false \
@@ -333,7 +335,8 @@ nsys profile \
   --trace=nvtx,vulkan,cuda,osrt \
   --gpuctxsw=false \
   ./python.sh standalone_examples/benchmarks/benchmark_camera.py \
-  --num-cameras 1 --num-frames 100 --headless \
+  --num-cameras 1 --num-frames 100 \
+  --no-window --/app/window/hideUi=True \
   --/app/profileFromStart=true --/profiler/enabled=true \
   --/app/profilerBackend=nvtx --/app/profilerMask=1 \
   --/plugins/carb.profiler-tracy.plugin/fibersAsThreads=false \
@@ -344,28 +347,33 @@ nsys profile \
 **Isaac Sim with Nsight (full host-only mode):**
 ```bash
 export CARB_PROFILING_PYTHON=1
+export DISPLAY=:0
+export OMNI_PASS='<YOUR_API_KEY>'
+export OMNI_USER='$omni-api-token'
 
-sudo prlimit --nofile=65536:65536 /bin/bash -c \
-"export OMNI_KIT_ALLOW_ROOT=1; \
- export DISPLAY=:0; \
- export OMNI_PASS='<YOUR_API_KEY>'; \
- export OMNI_USER='\$omni-api-token'; \
- nsys profile \
-   --force-overwrite=true \
-   --output=isaacsim_profile \
-   --sample=system-wide \
-   --trace=cuda,nvtx,vulkan,osrt \
-   --gpu-metrics-devices=all \
-   --gpuctxsw=true \
-   --cuda-memory-usage=true \
-   --cuda-graph-trace=graph:host-and-device \
-   ./python.sh standalone_examples/benchmarks/benchmark_camera.py \
-   --num-cameras 1 --num-frames 100 --headless \
-   --/app/profileFromStart=true --/profiler/enabled=true \
-   --/app/profilerBackend=nvtx --/app/profilerMask=1 \
-   --/plugins/carb.profiler-tracy.plugin/fibersAsThreads=false \
-   --/profiler/channels/carb.events/enabled=false \
-   --/profiler/channels/carb.tasking/enabled=false"
+# Raise the soft file-descriptor limit without sudo when the shell allows it.
+ulimit -n 65536 2>/dev/null || echo "Could not raise nofile soft limit; continuing"
+
+nsys profile \
+  --force-overwrite=true \
+  --output=isaacsim_profile \
+  --sample=system-wide \
+  --trace=cuda,nvtx,vulkan,osrt \
+  --gpu-metrics-devices=all \
+  --gpuctxsw=true \
+  --cuda-memory-usage=true \
+  --cuda-graph-trace=graph:host-and-device \
+  ./python.sh standalone_examples/benchmarks/benchmark_camera.py \
+  --num-cameras 1 --num-frames 100 \
+  --no-window --/app/window/hideUi=True \
+  --/app/profileFromStart=true --/profiler/enabled=true \
+  --/app/profilerBackend=nvtx --/app/profilerMask=1 \
+  --/plugins/carb.profiler-tracy.plugin/fibersAsThreads=false \
+  --/profiler/channels/carb.events/enabled=false \
+  --/profiler/channels/carb.tasking/enabled=false
+
+# If CPU sampling is still blocked and privileged profiling is approved, rerun
+# the same command with `sudo -E nsys profile ...`; do not use sudo by default.
 ```
 
 **Isaac Lab with Nsight (container-safe default):**

@@ -56,6 +56,8 @@ Do not proceed with Isaac Sim standalone benchmarks until both the runtime and t
 
 All in `standalone_examples/benchmarks/`. Run via `./python.sh <script> [args]`.
 
+> **Packaging note:** These standalone scripts are available in source checkouts/source builds and some container/archive layouts. Pip installs can provide the Isaac Sim runtime without this directory. If `standalone_examples/benchmarks` is missing, do not improvise paths; clone/use a source layout, or switch to Isaac Lab benchmarks for local validation.
+
 | Script | What it measures | Key params |
 |--------|-----------------|------------|
 | `benchmark_camera.py` | Multi-camera rendering FPS | `--num-cameras`, `--resolution W H` |

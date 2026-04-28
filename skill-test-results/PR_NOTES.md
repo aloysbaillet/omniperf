@@ -190,3 +190,19 @@ Validation after these changes:
 - Phase 3: tooling smoke passes (`nsys`, `sqlite3`, Tracy tools, Python `nvtx`). CPU sampling still blocked by `perf_event_paranoid=4`.
 - Phase 4: install skills, profiling, nsys-analyze, nvtx-python, profiling-api, and diagnose-perf pass. `benchmark-isaaclab` passes with warnings after a tiny Cartpole non-RL benchmark. `benchmark-isaacsim` remains blocked because pip Isaac Sim lacks `standalone_examples/benchmarks`. `tracy-memory` remains blocked because no `liballocwrapper.so` is available. `perf-tuning` remains blocked for real before/after evidence because applying tuning and running heavier workloads need approval.
 
+## 2026-04-28 follow-up: final review polish
+
+A sub-review found a few remaining doc-polish defects after the approval-gate pass. Fixed:
+
+- `profiling`: removed stale Tracy `capture/build/unix/capture-release` path and now defers Tracy binary setup to `install-profilers` / PATH resolution.
+- `profiling`: replaced Isaac Sim `--headless` in Nsight examples with Kit-style `--no-window --/app/window/hideUi=True`, avoiding confusion with Isaac Lab's version-dependent headless flags.
+- `profiling`: removed the full-command `sudo prlimit` wrapper from the full host Nsight example. The example now tries `ulimit -n` and non-sudo `nsys` first, with `sudo -E nsys` only as an approved fallback.
+- `benchmark-isaacsim`: added a note that `standalone_examples/benchmarks` is present in source/container/archive layouts, not necessarily pip installs.
+- `nvtx-python`: replaced the interactive-unfriendly `$0` setup with a `find`-based discovery and explicit fallback.
+- `install-profilers`: replaced the hard-coded versioned Nsight Systems standalone URL with a placeholder and instruction to fetch the current URL from NVIDIA's download page.
+
+Validation after this polish:
+
+- Phase 0/1: 12/12 pass, 7 expected risky/privileged warnings.
+- Phase 4: same expected state — main docs pass, Isaac Sim benchmarks blocked by missing standalone scripts, Tracy memory blocked by missing `liballocwrapper.so`, real perf tuning blocked pending approved workload/tuning.
+

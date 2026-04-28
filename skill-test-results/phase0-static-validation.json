@@ -1,5 +1,5 @@
 {
-  "timestamp": 1777363954.290507,
+  "timestamp": 1777364254.128042,
   "repo": "/home/horde/.openclaw/workspace/omniperf",
   "skills": [
     {
@@ -194,132 +194,132 @@
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 37,
-          "snippet": "sudo dpkg -i nsight-systems-*.deb"
+          "line": 38,
+          "snippet": "sudo dpkg -i nsight-systems.deb"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 45,
+          "line": 46,
           "snippet": "sudo ./NsightSystems-linux-public-*.run --accept"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 57,
+          "line": 58,
           "snippet": "sudo apt-get update"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 59,
+          "line": 60,
           "snippet": "sudo apt-get install -y \"$NSYS_PKG\""
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 70,
+          "line": 71,
           "snippet": "sudo ln -sf \"$NSYS_BIN\" /usr/local/bin/nsys"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 79,
+          "line": 80,
           "snippet": "sudo dpkg -i cuda-keyring_1.1-1_all.deb"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 80,
+          "line": 81,
           "snippet": "sudo apt-get update"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 85,
+          "line": 86,
           "snippet": "sudo apt-get install -y \"$NSYS_PKG\""
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 94,
+          "line": 95,
           "snippet": "sudo apt-get install -y nsight-systems-cli"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 106,
+          "line": 107,
           "snippet": "sudo sh -c 'echo 2 > /proc/sys/kernel/perf_event_paranoid'"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 109,
+          "line": 110,
           "snippet": "sudo sh -c 'echo kernel.perf_event_paranoid=2 > /etc/sysctl.d/99-nsys.conf'"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 127,
+          "line": 128,
           "snippet": "sudo apt-get install -y sqlite3"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 174,
+          "line": 175,
           "snippet": "sudo apt-get install -y build-essential cmake git libcapstone-dev"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 183,
+          "line": 184,
           "snippet": "sudo cp csvexport/build/tracy-csvexport /usr/local/bin/csvexport"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 189,
+          "line": 190,
           "snippet": "sudo cp capture/build/tracy-capture /usr/local/bin/capture"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 190,
+          "line": 191,
           "snippet": "sudo ln -sf /usr/local/bin/capture /usr/local/bin/capture-release  # compatibility alias"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 191,
+          "line": 192,
           "snippet": "sudo ln -sf /usr/local/bin/capture /usr/local/bin/tracy-capture    # optional compatibility alias"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 196,
+          "line": 197,
           "snippet": "sudo cp update/build/tracy-update /usr/local/bin/update"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 197,
+          "line": 198,
           "snippet": "sudo ln -sf /usr/local/bin/update /usr/local/bin/tracy-update  # optional compatibility alias"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 218,
+          "line": 219,
           "snippet": "sudo apt-get install -y tracy-csvexport tracy-capture"
         },
         {
           "pattern": "\\bapt(-get)?\\s+install\\b",
-          "line": 59,
+          "line": 60,
           "snippet": "sudo apt-get install -y \"$NSYS_PKG\""
         },
         {
           "pattern": "\\bapt(-get)?\\s+install\\b",
-          "line": 85,
+          "line": 86,
           "snippet": "sudo apt-get install -y \"$NSYS_PKG\""
         },
         {
           "pattern": "\\bapt(-get)?\\s+install\\b",
-          "line": 94,
+          "line": 95,
           "snippet": "sudo apt-get install -y nsight-systems-cli"
         },
         {
           "pattern": "\\bapt(-get)?\\s+install\\b",
-          "line": 127,
+          "line": 128,
           "snippet": "sudo apt-get install -y sqlite3"
         },
         {
           "pattern": "\\bapt(-get)?\\s+install\\b",
-          "line": 174,
+          "line": 175,
           "snippet": "sudo apt-get install -y build-essential cmake git libcapstone-dev"
         },
         {
           "pattern": "\\bapt(-get)?\\s+install\\b",
-          "line": 218,
+          "line": 219,
           "snippet": "sudo apt-get install -y tracy-csvexport tracy-capture"
         }
       ],
@@ -404,17 +404,27 @@
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 348,
-          "snippet": "sudo prlimit --nofile=65536:65536 /bin/bash -c \\"
+          "line": 354,
+          "snippet": "# Raise the soft file-descriptor limit without sudo when the shell allows it."
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 382,
+          "line": 376,
+          "snippet": "# the same command with `sudo -E nsys profile ...`; do not use sudo by default."
+        },
+        {
+          "pattern": "\\bsudo\\b",
+          "line": 376,
+          "snippet": "# the same command with `sudo -E nsys profile ...`; do not use sudo by default."
+        },
+        {
+          "pattern": "\\bsudo\\b",
+          "line": 390,
           "snippet": "For host-only CPU sampling/GPU metrics, add `--sample=system-wide --gpu-metrics-devices=all --gpuctxsw=true` only when the host allows it. Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approva"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 382,
+          "line": 390,
           "snippet": "For host-only CPU sampling/GPU metrics, add `--sample=system-wide --gpu-metrics-devices=all --gpuctxsw=true` only when the host allows it. Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approva"
         }
       ],

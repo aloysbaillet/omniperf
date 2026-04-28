@@ -20,9 +20,10 @@ uv pip install nvtx
 # PYTHONPATH includes this directory. It does NOT overwrite the environment's
 # site-packages/sitecustomize.py. To disable, simply unset PYTHONPATH or
 # remove this entry.
-NVTX_SKILL_DIR="$(cd "$(dirname "$0")/../.agents/skills/nvtx-python" 2>/dev/null && pwd)"
+NVTX_SKILL_DIR="$(find "$PWD" -path '*/.agents/skills/nvtx-python/scripts/sitecustomize.py' -print -quit | xargs -r dirname | xargs -r dirname)"
 # Or set it explicitly to wherever the skill is installed:
 # NVTX_SKILL_DIR=/path/to/omniperf/.agents/skills/nvtx-python
+[ -n "$NVTX_SKILL_DIR" ] || { echo "Set NVTX_SKILL_DIR to .agents/skills/nvtx-python"; exit 1; }
 export PYTHONPATH="$NVTX_SKILL_DIR/scripts:${PYTHONPATH:-}"
 ```
 

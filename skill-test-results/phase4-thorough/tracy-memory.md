@@ -21,7 +21,7 @@ Overall status: `blocked_missing_prereq`
     "returncode": 0,
     "stdout": "",
     "stderr": "",
-    "duration_s": 0.316
+    "duration_s": 0.3
   }
 }
 ```
