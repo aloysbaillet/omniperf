@@ -1,5 +1,5 @@
 {
-  "timestamp": 1777362056.282552,
+  "timestamp": 1777362731.8195589,
   "repo": "/home/horde/.openclaw/workspace/omniperf",
   "skills": [
     {
@@ -384,18 +384,18 @@
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 294,
+          "line": 346,
           "snippet": "sudo prlimit --nofile=65536:65536 /bin/bash -c \\"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 330,
-          "snippet": "Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approval to run privileged profiling."
+          "line": 380,
+          "snippet": "For host-only CPU sampling/GPU metrics, add `--sample=system-wide --gpu-metrics-devices=all --gpuctxsw=true` only when the host allows it. Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approva"
         },
         {
           "pattern": "\\bsudo\\b",
-          "line": 330,
-          "snippet": "Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approval to run privileged profiling."
+          "line": 380,
+          "snippet": "For host-only CPU sampling/GPU metrics, add `--sample=system-wide --gpu-metrics-devices=all --gpuctxsw=true` only when the host allows it. Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approva"
         }
       ],
       "path": ".agents/skills/profiling/SKILL.md"

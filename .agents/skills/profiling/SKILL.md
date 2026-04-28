@@ -235,6 +235,39 @@ sudo dpkg -i nsight-systems-*.deb
 
 Try without `sudo` first. Use `sudo -E` only when `perf_event_paranoid` blocks CPU sampling or system-wide OS runtime data, and only after confirming it is acceptable for the machine. In containers, `sudo` may not exist and GPU metrics may require extra host privileges.
 
+#### Container-safe mode: NVTX/Vulkan/CUDA only, no CPU sampling
+
+Use this mode when running inside a container where you cannot change `perf_event_paranoid`, cannot switch CPU governor, or do not have host-level perf privileges. Do not burn time fighting CPU sampling in that environment: capture NVTX zones, Vulkan activity, CUDA/Warp/PyTorch activity if present, and OS runtime where available. Treat the run as trace-structure evidence, not a final CPU bottleneck study.
+
+```bash
+export CARB_PROFILING_PYTHON=1
+NSYS_OUTPUT="kit_profile_container"
+
+nsys profile \
+  --force-overwrite=true \
+  --output="$NSYS_OUTPUT" \
+  --sample=none \
+  --trace=nvtx,vulkan,cuda,osrt \
+  --gpuctxsw=false \
+  ./python.sh standalone_examples/benchmarks/benchmark_camera.py \
+  --num-cameras 1 --num-frames 100 --headless \
+  --/app/profileFromStart=true --/profiler/enabled=true \
+  --/app/profilerBackend=nvtx --/app/profilerMask=1 \
+  --/plugins/carb.profiler-tracy.plugin/fibersAsThreads=false \
+  --/profiler/channels/carb.events/enabled=false \
+  --/profiler/channels/carb.tasking/enabled=false
+```
+
+Notes:
+- Omit `--gpu-metrics-devices=all` by default in containers; it often fails with `ERR_NVGPUCTRPERM` unless host GPU counter permissions are configured.
+- Omit `--sample=system-wide`; it requires host perf permissions and fails when `perf_event_paranoid` is high/read-only.
+- If `osrt` is also blocked/noisy in your container, reduce to `--trace=nvtx,vulkan,cuda`.
+- Record in the report that CPU sampling and governor control were unavailable, so CPU-side conclusions are lower confidence.
+
+#### Full host mode: CPU sampling and GPU metrics enabled
+
+Use this only on hosts where CPU sampling and GPU metrics are allowed.
+
 ```bash
 export CARB_PROFILING_PYTHON=1
 NSYS_OUTPUT="kit_profile"
@@ -287,7 +320,26 @@ For NVTX zone interpretation and phase detection config, see the `nsys-analyze` 
   --/exts/isaacsim.benchmark.services/metrics/metrics_output_folder=/tmp/results
 ```
 
-**Isaac Sim with Nsight:**
+**Isaac Sim with Nsight (container-safe default):**
+```bash
+export CARB_PROFILING_PYTHON=1
+
+nsys profile \
+  --force-overwrite=true \
+  --output=isaacsim_profile \
+  --sample=none \
+  --trace=nvtx,vulkan,cuda,osrt \
+  --gpuctxsw=false \
+  ./python.sh standalone_examples/benchmarks/benchmark_camera.py \
+  --num-cameras 1 --num-frames 100 --headless \
+  --/app/profileFromStart=true --/profiler/enabled=true \
+  --/app/profilerBackend=nvtx --/app/profilerMask=1 \
+  --/plugins/carb.profiler-tracy.plugin/fibersAsThreads=false \
+  --/profiler/channels/carb.events/enabled=false \
+  --/profiler/channels/carb.tasking/enabled=false
+```
+
+**Isaac Sim with Nsight (full host-only mode):**
 ```bash
 export CARB_PROFILING_PYTHON=1
 
@@ -314,20 +366,18 @@ sudo prlimit --nofile=65536:65536 /bin/bash -c \
    --/profiler/channels/carb.tasking/enabled=false"
 ```
 
-**Isaac Lab with Nsight:**
+**Isaac Lab with Nsight (container-safe default):**
 ```bash
 OMNI_KIT_ALLOW_ROOT=1 DISPLAY=:0 \
   TRACY_NO_SYS_TRACE=1 TRACY_NO_CALLSTACK=1 CARB_PROFILING_PYTHON=1 \
   nsys profile --force-overwrite=true --output=isaaclab_profile \
-  --sample=system-wide --trace=cuda,nvtx,vulkan,osrt \
-  --gpu-metrics-devices=all --gpuctxsw=true \
-  --cuda-memory-usage=true --cuda-graph-trace=graph:host-and-device \
+  --sample=none --trace=nvtx,vulkan,cuda,osrt --gpuctxsw=false \
   ./isaaclab.sh -p scripts/benchmarks/benchmark_non_rl.py \
   --task=Isaac-Cartpole-Direct-v0 --viz none --num_frames 100 \
   --kit_args "--/app/profileFromStart=true --/profiler/enabled=true --/app/profilerBackend=nvtx --/app/profilerMask=1 --/plugins/carb.profiler-tracy.plugin/fibersAsThreads=false --/profiler/channels/carb.events/enabled=false --/profiler/channels/carb.tasking/enabled=false"
 ```
 
-Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approval to run privileged profiling.
+For host-only CPU sampling/GPU metrics, add `--sample=system-wide --gpu-metrics-devices=all --gpuctxsw=true` only when the host allows it. Use `sudo -E` only if the non-sudo command fails because CPU sampling is blocked and you have approval to run privileged profiling.
 
 ### Export Handoff
 
