@@ -4,26 +4,22 @@
 This script keeps authored eval cases in the Agent Skills convention:
   .agents/skills/<skill>/evals/evals.json
 
-It also preserves the repository's existing host/static validation phases by
-writing results under skill-test-results/ for PR review.
+It writes only lightweight markdown evidence under:
+  .agents/skills/eval-results/
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
-import os
 import re
-import shutil
-import subprocess
-import time
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / ".agents" / "skills"
 INSTALLED = Path("/home/horde/.openclaw/workspace/skills")
-RESULTS = ROOT / "skill-test-results"
+RESULTS = SKILLS / "eval-results"
 
 RISK_PATTERNS = [
     r"\bsudo\b",
@@ -36,36 +32,6 @@ RISK_PATTERNS = [
     r"LD_PRELOAD",
     r"\bkillall\b",
 ]
-
-
-def run(cmd: str, timeout: int = 20, cwd: Path | None = None, env: dict[str, str] | None = None) -> dict[str, Any]:
-    started = time.time()
-    try:
-        cp = subprocess.run(
-            cmd,
-            shell=True,
-            cwd=cwd,
-            env=env,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            timeout=timeout,
-        )
-        return {
-            "cmd": cmd,
-            "returncode": cp.returncode,
-            "stdout": cp.stdout.strip(),
-            "stderr": cp.stderr.strip(),
-            "duration_s": round(time.time() - started, 3),
-        }
-    except subprocess.TimeoutExpired as exc:
-        return {
-            "cmd": cmd,
-            "returncode": None,
-            "stdout": (exc.stdout or "").strip() if isinstance(exc.stdout, str) else "",
-            "stderr": (((exc.stderr or "") if isinstance(exc.stderr, str) else "") + "\nTIMEOUT").strip(),
-            "duration_s": round(time.time() - started, 3),
-        }
 
 
 def sha256(path: Path) -> str:
@@ -126,7 +92,7 @@ def load_evals(skill_dir: Path) -> tuple[dict[str, Any] | None, list[str]]:
     return data, issues
 
 
-def phase0_phase1() -> None:
+def static_validation() -> None:
     RESULTS.mkdir(parents=True, exist_ok=True)
     skills = []
     name_counts: dict[str | None, int] = {}
@@ -189,8 +155,7 @@ def phase0_phase1() -> None:
             skill["issues"].append("duplicate_name")
 
     phase0 = {
-        "timestamp": time.time(),
-        "repo": str(ROOT),
+"repo": str(ROOT),
         "skills": skills,
         "summary": {
             "skill_count": len(skills),
@@ -199,7 +164,6 @@ def phase0_phase1() -> None:
             "warning_count": sum(1 for s in skills if s["warnings"]),
         },
     }
-    (RESULTS / "phase0-static-validation.json").write_text(json.dumps(phase0, indent=2) + "\n")
     lines = [
         "# Phase 0 — Static Skill Validation",
         "",
@@ -223,36 +187,9 @@ def phase0_phase1() -> None:
             if len(s["risky_matches"]) > 20:
                 lines.append(f"- ... {len(s['risky_matches']) - 20} more")
             lines.append("")
-    (RESULTS / "phase0-static-validation.md").write_text("\n".join(lines) + "\n")
+    (RESULTS / "static-validation.md").write_text("\n".join(lines) + "\n")
 
-    commands = {
-        "uname": "uname -a",
-        "os_release": "cat /etc/os-release 2>/dev/null || true",
-        "disk_workspace": "df -h /home/horde/.openclaw/workspace",
-        "git": "git --version",
-        "python3": "python3 --version",
-        "python": "python --version 2>/dev/null || true",
-        "pip": "python3 -m pip --version 2>/dev/null || true",
-        "conda": "conda --version 2>/dev/null || true",
-        "uv": "uv --version 2>/dev/null || true",
-        "nvidia_smi": "nvidia-smi 2>/dev/null || true",
-        "nvidia_smi_query": "nvidia-smi --query-gpu=name,driver_version,memory.total,memory.used,temperature.gpu,pstate,clocks.sm,clocks.mem --format=csv,noheader 2>/dev/null || true",
-        "nsys": "nsys --version 2>/dev/null || true",
-        "sqlite3": "sqlite3 --version 2>/dev/null || true",
-        "csvexport": "csvexport --help 2>/dev/null | head -40 || true",
-        "tracy_capture": "which tracy-capture 2>/dev/null || true; tracy-capture --help 2>/dev/null | head -20 || true",
-        "common_isaac_paths": "find /home/horde /opt /data -maxdepth 4 \\( -name python.sh -o -name isaaclab.sh \\) 2>/dev/null | head -100",
-    }
-    checks = {key: run(cmd, timeout=30) for key, cmd in commands.items()}
-    phase1 = {"timestamp": time.time(), "checks": checks}
-    (RESULTS / "phase1-host-prereqs.json").write_text(json.dumps(phase1, indent=2) + "\n")
-    lines = ["# Phase 1 — Host Prerequisite Snapshot", ""]
-    for key, res in checks.items():
-        out = res["stdout"] or res["stderr"] or ""
-        preview = "\n".join(out.splitlines()[:20])
-        lines += [f"## {key}", "", f"- return code: `{res['returncode']}`", "", "```text", preview[:4000], "```", ""]
-    (RESULTS / "phase1-host-prereqs.md").write_text("\n".join(lines) + "\n")
-    print(json.dumps({"phase0": phase0["summary"], "phase1_checks": len(checks)}, indent=2))
+    print(json.dumps({"phase0": phase0["summary"]}, indent=2))
 
 
 def evals_summary() -> None:
@@ -272,14 +209,12 @@ def evals_summary() -> None:
         aggregate["skill_count"] += 1
         aggregate["eval_count"] += len(cases)
         aggregate["assertion_count"] += assertion_count
-    out = {"timestamp": time.time(), "summary": aggregate, "skills": rows}
     RESULTS.mkdir(parents=True, exist_ok=True)
-    (RESULTS / "evals-summary.json").write_text(json.dumps(out, indent=2) + "\n")
     lines = [
         "# AgentSkill Evals Summary",
         "",
         "Authored eval cases live beside each skill at `.agents/skills/<skill>/evals/evals.json`.",
-        "Generated run results stay under `skill-test-results/` for PR review.",
+        "Generated run results are intentionally kept to this small markdown summary.",
         "",
         "| Skill | Evals | Assertions | Issues |",
         "|---|---:|---:|---|",
@@ -293,10 +228,10 @@ def evals_summary() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="OmniPerf AgentSkill eval helper")
-    parser.add_argument("command", choices=["phase0-phase1", "evals-summary"])
+    parser.add_argument("command", choices=["static-validation", "evals-summary"])
     args = parser.parse_args()
-    if args.command == "phase0-phase1":
-        phase0_phase1()
+    if args.command == "static-validation":
+        static_validation()
     elif args.command == "evals-summary":
         evals_summary()
 

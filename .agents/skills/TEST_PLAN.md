@@ -2,7 +2,7 @@
 
 Validate that OmniPerf AgentSkills are discoverable, safe to invoke, and useful in the Isaac Sim / Isaac Lab / Kit performance workflow.
 
-This plan is layered: static/doc checks first, then dry-run prompt tests, then non-invasive host checks, then real artifact-producing tests only when prerequisites exist or the user explicitly approves installs/privileged commands.
+This plan is centered on per-skill eval manifests. Keep authored cases in `.agents/skills/<skill>/evals/evals.json`; keep only tiny markdown summaries in `.agents/skills/eval-results/`. Do not commit runtime artifacts or host-specific logs.
 
 ## Scope
 
@@ -48,32 +48,13 @@ Run a static scan over every `SKILL.md`:
 
 Expected output:
 
-- `skill-test-results/phase0-static-validation.md`
-- `skill-test-results/phase0-static-validation.json`
-
-## Phase 1 — Host Prerequisite Snapshot
-
-Use non-mutating checks only:
-
-- OS/kernel.
-- NVIDIA driver/GPU via `nvidia-smi`.
-- Python, pip, conda, uv.
-- `nsys`, `sqlite3`, `csvexport`, `tracy-capture`, Tracy `update`.
-- Existing Isaac Sim / Isaac Lab paths.
-- Disk space.
-- CPU governor.
-- CUDA/PyTorch availability if a Python env exists.
-
-Expected output:
-
-- `skill-test-results/phase1-host-prereqs.md`
-- `skill-test-results/phase1-host-prereqs.json`
+- `.agents/skills/eval-results/static-validation.md`
 
 ## Phase 2 — Eval Cases / Prompt Selection Smoke Tests
 
 Dry-run only. Do not install, use sudo, run benchmarks, or start heavy GPU workloads.
 
-Anthropic Agent Skills convention: authored eval cases live beside each skill at `.agents/skills/<skill>/evals/evals.json`. Each case has `id`, `prompt`, `expected_output`, and `assertions`. Generated reports still live under `skill-test-results/` for PR review.
+Anthropic Agent Skills convention: authored eval cases live beside each skill at `.agents/skills/<skill>/evals/evals.json`. Each case has `id`, `prompt`, `expected_output`, and `assertions`.
 
 Representative prompts now captured in `evals/evals.json` files:
 
@@ -93,8 +74,7 @@ Representative prompts now captured in `evals/evals.json` files:
 Expected authored eval files and generated summaries:
 
 - `.agents/skills/<skill>/evals/evals.json` for every skill
-- `skill-test-results/evals-summary.md`
-- `skill-test-results/evals-summary.json`
+- `.agents/skills/eval-results/evals-summary.md`
 
 ## Phase 3 — Runtime / Tooling Checks
 
@@ -109,8 +89,7 @@ Thorough cases now belong in each skill's `.agents/skills/<skill>/evals/evals.js
 Maintain:
 
 - `.agents/skills/<skill>/evals/evals.json` — authored eval cases, Anthropic/Agent Skills convention
-- `skill-test-results/evals-summary.md` — generated eval inventory
-- `skill-test-results/SUMMARY.md`
-- `skill-test-results/PR_NOTES.md`
+- `.agents/skills/eval-results/evals-summary.md` — generated eval inventory
+- `.agents/skills/eval-results/static-validation.md` — lightweight static validation evidence
 
-Use `PR_NOTES.md` as the running backlog for doc fixes and follow-up PRs. Keep only stable helper scripts under `scripts/`; keep generated result summaries under `skill-test-results/`.
+Do not commit ad-hoc runtime outputs, trace files, host snapshots, or bulky generated reports. If deeper runtime evidence is needed, keep it in an external eval workspace and summarize only the durable lesson in the PR.

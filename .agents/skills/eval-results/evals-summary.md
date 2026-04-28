@@ -1,7 +1,7 @@
 # AgentSkill Evals Summary
 
 Authored eval cases live beside each skill at `.agents/skills/<skill>/evals/evals.json`.
-Generated run results stay under `skill-test-results/` for PR review.
+Generated run results are intentionally kept to this small markdown summary.
 
 | Skill | Evals | Assertions | Issues |
 |---|---:|---:|---|
