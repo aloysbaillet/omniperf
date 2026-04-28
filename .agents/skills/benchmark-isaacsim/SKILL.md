@@ -14,7 +14,7 @@ See the `install-isaacsim` skill for installation (pip, source build, Docker).
 
 ## Before Running Any Benchmark
 
-1. **Use a WARM run for headline FPS/frametime** — see the COLD/WARM/TRACE method in the `profiling` skill.
+1. **Use a WARM run for headline FPS/frametime** — see the COLD/WARM/TRACY method in the `profiling` skill.
 2. **Set CPU governor to performance** — see `perf-tuning` skill.
 3. **Set Nucleus auth** if using Nucleus-hosted assets — see `install-isaacsim` skill.
 4. **Do not patch Isaac Sim shutdown by default.** If Tracy shutdown hangs after outputs are complete, use the scoped last-resort guidance in the `profiling` skill.
@@ -87,7 +87,7 @@ Monitor progress by polling for result JSON files, not watching stdout.
 Kit log: `~/.nvidia-omniverse/logs/Kit/isaacsim*/kit.log` or `--/log/file=/tmp/kit.log`.
 
 ### Hung processes after results are written
-If `kpis_*.json` and `*.tracy` exist with non-zero size and the app process has not exited after 2 minutes with no new output, kill the app process, not the Tracy capture process. Try `kill <app_pid>` first, then `kill -9 <app_pid>` only if it remains stuck.
+If `kpis_*.json` and `*.tracy` exist with non-zero size and the process has not exited after 2 minutes with no new output, follow the `profiling` skill's guide-aligned shutdown handling and force-kill the app and capture processes.
 
 ## Multi-Camera Optimization
 

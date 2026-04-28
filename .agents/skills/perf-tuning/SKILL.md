@@ -93,9 +93,11 @@ for prim in stage.Traverse():
 Applicable when previous-frame physics results are acceptable (RL training, SDG).
 
 ### Solver Type
-PGS (type 0) = faster, less accurate. TGS (type 1) = more accurate, slightly slower.
-```bash
---/physics/physxScene/solverType=0  # PGS for speed
+The default solver is PGS. The profiling guide calls out switching `PhysxSceneAPI.solverType` to TGS as a scenario-dependent tuning option; verify with a WARM benchmark before keeping it.
+
+```python
+api = PhysxSchema.PhysxSceneAPI.Apply(physics_scene_prim)
+api.CreateSolverTypeAttr().Set("TGS")
 ```
 
 ## Extension Change Detection (fsWatcher)

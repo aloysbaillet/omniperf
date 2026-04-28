@@ -129,7 +129,7 @@ For detailed settings and commands, see the `perf-tuning` skill. In order of typ
 3. **Disable debug viz** — `--/physics/debugDraw=false`
 4. **CPU governor** — set to `performance`
 5. **RTX quality** — DLSS execMode, preset tuning (see `perf-tuning`)
-6. **PhysX solver** — PGS for speed, TGS for accuracy
+6. **PhysX solver** — TGS may help in some scenarios; verify with WARM benchmark results
 7. **Collision geometry** — check for "Falling back to CPU PhysX" in Kit logs
 8. **waitIdle / async rendering** — CPU-GPU pipelining
 
